@@ -27,10 +27,8 @@
         luigid
     2.Then, in a browser, fire up the following web address
         http://localhost:8082
-    3: Run luigi on deamon
-        session 1: python printnumbers.py --scheduler-host localhost SquaredNumbers --n 200000
-        session 2: python printnumbers.py --scheduler-host localhost SquaredNumbers --n 200000
-        session 3: python printnumbers.py --scheduler-host localhost SquaredNumbers --n 200000
+    3: Run luigi on deamon for multiple workers
+        python printnumbers.py --scheduler-host localhost LotsOTasks  --workers 3
 '''
 
 
@@ -65,6 +63,14 @@ class SquaredNumbers(luigi.Task):
                 n = int(line.strip())
                 out = n * n
                 fout.write("{}:{}\n".format(n, out))
+
+
+class LotsOTasks(luigi.WrapperTask):
+
+    def requires(self):
+        jobs = [2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000]
+        for k in jobs:
+            yield SquaredNumbers(n=k)
 
 if __name__ == '__main__':
     luigi.run()
